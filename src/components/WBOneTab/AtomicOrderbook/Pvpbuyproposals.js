@@ -1,92 +1,99 @@
 import React, { useState, useEffect } from "react";
-import { Dropdown } from "primereact/dropdown";
 
-import { Dialog } from "primereact/dialog";
+import { DataTable } from 'primereact/datatable';
 import { Button } from "primereact/button";
-import { Card } from "primereact/card";
 import { IssuanceServiceWBOB } from "./issuanceServiceWBOB";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { InputNumber } from "primereact/inputnumber";
-import * as _ from "lodash";
 
-const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
-  const [displayBasic, setDisplayBasic] = useState(false);
-  const [totalvalue, setTotalvalue] = useState(0);
-  const [wholesalebanks, setWholesalebanks] = useState([]);
-  const [wholesalebank, setWholesalebank] = useState({});
-  const [organization, setOrganization] = useState("");
+import { Column } from 'primereact/column';
+import * as _ from 'lodash';
+function Pvpbuyproposals({ user, buy, sell, chosenpair, setOrderplacedbuy, setOrderplacedsell }) {
+ const [modifiedbuy, setModifiedbuy] = useState([]);
+ const [consideredsell, setConsideredsell] = useState([]);
 
-  const [data, setData] = useState({
-    price: price,
+ useEffect(() => {
+  var tmpdata = buy.filter(xx => {
+         if(user.subcentralaccountnumber == xx.specificaccountnumber ) return true;
+    if(user.subcentralaccountnumber == xx.buyaccountnumber ) return true;
 
-    volume: 0,
-    total: 0,
   });
-  /*
-  const [data1, setData1] = useState({
-    price: price,
-    volume: 0,
-    total: 0,
+  setModifiedbuy( tmpdata);
+
+  }, [buy, sell, consideredsell]);
+
+
+ useEffect(() => {
+  var tmpdata = sell.filter(xx => {
+    if(user.subcentralaccountnumber == xx.sellaccountnumber ) return true;
   });
-	*/
+         // consider buys only from this user
+  setConsideredsell( tmpdata);
+  }, [ sell]);
 
-  const [brokenpair, setBrokenpair] = useState({
-    first: chosenpair.split("-")[0],
-    second: chosenpair.split("-")[1],
-  });
 
-  //  const totalvalue = data.price * data.volume;
+    const issuanceServiceWBOB = new IssuanceServiceWBOB();
 
-  console.log("data", data);
+  const acceptatombuyorder = async (rowData) => {
 
-  const issuanceServiceWBOB = new IssuanceServiceWBOB();
-  useEffect(() => {
-    getwholesalebanks();
-  }, []);
+    var chosenpair = rowData.pairname;
+    var  first =  chosenpair.split('-')[0];
+    var  second= chosenpair.split('-')[1];
 
-  const getwholesalebanks = async () => {
-    try {
-      const wbs = await issuanceServiceWBOB.getwholesalebanks();
-      console.log(wbs);
-      var rem = wbs.filter((xx) => {
-        if (xx.subcentralaccountnumber != user.subcentralaccountnumber)
-          return true;
-      });
-      // subcentralaccountnumber
-      setWholesalebanks(rem);
-    } catch (err) {}
+    var price = rowData.buyprice;
+    var amount = rowData.buyamount
+    var prepared = rowData.prepared;
+
+    var ret = await issuanceServiceWBOB.acceptatombuyorder(chosenpair, rowData, first, second, price, amount);
+   
+          console.log(ret);
+    if(ret && (ret.code == -1) ) {
+
+     ret = await issuanceServiceWBOB.acceptatombuyorder(chosenpair, rowData, first, second, price, amount);
+    }
+           setOrderplacedbuy(true);
+
+      if(_.has(ret, 'code')) {
+          if(ret.code == 0) {
+                alert('Accept success');
+          }else {
+                alert('Accept failed');
+                  return;
+          }
+      }
+
+
   };
 
-  const placeatombuyorder = async () => {
-    if (!wholesalebank || !wholesalebank.subcentralaccountnumber) {
-      alert("Select the bank to trade");
-      return;
-    }
+  const rejectatombuyorder = async (rowData) => {
 
-    //    /atomicexchange/createmakeorder
-    var ret = await issuanceServiceWBOB.placeatombuyorder(
-      wholesalebank.subcentralaccountnumber,
-      chosenpair,
-      brokenpair.first,
-      brokenpair.second,
-      data.price,
-      data.volume
-    );
-    console.log(ret);
-    if (ret && ret.code == -1) {
-      ret = await issuanceServiceWBOB.placeatombuyorder(
-        wholesalebank.subcentralaccountnumber,
-        chosenpair,
-        brokenpair.first,
-        brokenpair.second,
-        data.price,
-        data.volume
-      );
-    }
+    var chosenpair = rowData.pairname;
+    var  first =  chosenpair.split('-')[0];
+    var  second= chosenpair.split('-')[1];
 
-    if (_.has(ret, "error")) {
-      /*
+    var price = rowData.buyprice;
+    var amount = rowData.buyamount
+    var prepared = rowData.prepared;
+
+    var ret = await issuanceServiceWBOB.rejectatombuyorder(chosenpair, rowData, first, second, price, amount);
+   
+          console.log(ret);
+    if(ret && ret.code == -1) {
+
+     ret = await issuanceServiceWBOB.rejectatombuyorder(chosenpair, rowData, first, second, price, amount);
+    }
+           setOrderplacedbuy(true);
+
+
+      if(_.has(ret, 'code')) {
+          if(ret.code == 0) {
+                alert('Reject success');
+          }else {
+                alert('Reject failed');
+                  return;
+          }
+      }
+
+        if(_.has(ret, 'error')) {
+                /*
                  *
                 "side": "atomicbuyside",
                 "needed": 190,
@@ -94,183 +101,267 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
                 "error": "failed to prepare"
                  * */
 
-      alert(
-        "Order failed : needed " +
-          ret.needed +
-          " " +
-          ret.neededsymbol +
-          " check balance in trading account"
-      );
+                alert('Reject failed');
+                 return;
+        }
+
+      if(_.has(ret, 'transactionid')) {
+                alert('Reject success');
+       }
+
+
+  };
+
+  const spriceBodyTemplate = (rowData) => {
+    return <span className="text-red-400"> {rowData.buyprice} </span>;
+  };
+
+  const pairnameBodyTemplate = (rowData) => {
+    return <span className="text-red-400"> {rowData.pairname} </span>;
+  };
+
+
+   const preparematchforatombuyorder = async (rowData) => {
+
+    var  first =  chosenpair.split('-')[0];
+    var  second= chosenpair.split('-')[1];
+       var price = rowData.buyprice;
+    var volume = rowData.buyamount;
+
+	    var ret = await issuanceServiceWBOB.placeatomsellorder('',                                       
+                chosenpair, first, second , price, volume);
+          console.log(ret);
+
+    if(ret && ret.code == -1) {
+     ret = await issuanceServiceWBOB.placeatomsellorder('', 
+                chosenpair, first, second , price, volume);
     }
 
-    if (_.has(ret, "transactionid")) {
-      alert("Order success");
+    setOrderplacedsell(true);
+
+      if(_.has(ret, 'code')) {
+          if(ret.code == 0) {
+                alert('Prepare success');
+          }else {
+                alert('Prepare failed');
+                  return;
+          }
+      }
+
+        if(_.has(ret, 'error')) {
+                /*
+                 *
+                "side": "atomicbuyside",
+                "needed": 190,
+                "neededsymbol": "Digital_INR",
+                "error": "failed to prepare"
+                 * */
+
+	 alert('Prepare failed : needed ' +ret.needed + ' ' + ret.neededsymbol + ' check balance in trading account');
+                 return;
+        }
+      if(_.has(ret, 'transactionid')) {
+                alert('Prepare success');
+       }
+
+   };
+
+   const cancelthis = async (rowData) => {
+
+    var chosenpair = rowData.pairname;
+    var  first =  chosenpair.split('-')[0];
+    var  second= chosenpair.split('-')[1];
+
+    var price = rowData.buyprice;
+    var amount = rowData.buyamount
+    var prepared = rowData.prepared;
+
+    var ret = await issuanceServiceWBOB.canceloneprepare(chosenpair, rowData, first, second, price, amount);
+
+          console.log(ret);
+    if(ret && ret.code == -1) {
+
+     ret = await issuanceServiceWBOB.canceloneprepare(chosenpair, rowData, first, second, price, amount);
+    }
+           setOrderplacedbuy(true);
+
+
+      if(_.has(ret, 'code')) {
+          if(ret.code == 0) {
+                alert('Cancel success');
+          }else {
+                alert('Cancel failed');
+                  return;
+          }
+      }
+
+        if(_.has(ret, 'error')) {
+                /*
+                 *
+                "side": "atomicbuyside",
+                "needed": 190,
+                "neededsymbol": "Digital_INR",
+                "error": "failed to prepare"
+                 * */
+
+                alert('Cancel failed');
+                 return;
+        }
+
+     if(_.has(ret, 'txid')) {
+                alert('Cancel success');
+      }
+
+
+  };
+
+
+
+  const buyselltemplate = (rowData) => {
+    return (rowData.side=='atomicbuyside')?'BUY' : 'SELL';
+
+  };
+
+  const anyprepared = (rowdata) => {
+	  console.log(consideredsell);
+        var anyfound = consideredsell.filter(xx=> {
+           if(xx.sellprice == rowdata.buyprice &&
+           xx.sellamount == rowdata.buyamount ) return true;
+	});
+
+	  console.log(anyfound);
+	  console.log(rowdata);
+	  if(anyfound.length > 0) return( true);
+	  else return false;
+  };
+
+  const executetemplate = (rowData) => {
+
+    if(user.subcentralaccountnumber == rowData.buyaccountnumber ) {
+    return (
+          <div className="flex align-items-center gap-2">
+                <Button label="Cancel" icon="pi " onClick={() => cancelthis(rowData)                             } />
+            </div>
+     )
+    }else if(user.subcentralaccountnumber == rowData.specificaccountnumber ) {
+	    
+         if(anyprepared(rowData) == true) {
+           return (
+          <div className="flex align-items-center gap-2">
+                <Button label="Accept" icon="pi " onClick={() => acceptatombuyorder(rowData)                             } />
+                <Button label="Reject" icon="pi " onClick={() => rejectatombuyorder(rowData)                             } />
+            </div>
+            )
+
+	 } else {
+           return (
+          <div className="flex align-items-center gap-2">
+                <Button label="Prepare" icon="pi " onClick={() => preparematchforatombuyorder(rowData)                             } />
+                <Button label="Reject" icon="pi " onClick={() => rejectatombuyorder(rowData)                             } />
+            </div>
+            )
+	 }
+
     }
 
-    setOrderplacedbuy(true);
   };
 
-  const showSuccess = () => {
-    toast.success("created successfully", {
-      // position: "top-right",
-      // autoClose: 5000,
-      // hideProgressBar: false,
-      // closeOnClick: true,
-      // pauseOnHover: true,
-      // draggable: true,
-      // progress: undefined,
-      // theme: "colored",
-      // theme: "dark",
-    });
+
+  const samountBodyTemplate = (rowData) => {
+    return rowData.buyamount;
+  };
+  const dateBodyTemplate1 = (rowData) => {
+    return (
+      <>
+        {new Intl.DateTimeFormat('en-US', {
+          // year: 'numeric',
+          // month: '2-digit',
+          // day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        }).format(rowData.createdAt)}
+      </>
+    );
   };
 
-  const clickAtomBuy = () => {
-    placeatombuyorder();
-
-    setDisplayBasic(false);
-    showSuccess();
-    //setData1(data);
+    const idBodyTemplate = (rowData) => {
+    return rowData.buyaccountnumber?rowData.buyaccountnumber: rowData.sellaccountnumber;
   };
 
-  useEffect(() => {
-    const tmpvalue = data.price * data.volume;
-    setTotalvalue(tmpvalue);
-    setData({ ...data, total: tmpvalue });
-  }, [data.price, data.volume]);
-
-  useEffect(() => {
-    setBrokenpair({
-      first: chosenpair.split("-")[0],
-      second: chosenpair.split("-")[1],
-    });
-  }, [chosenpair]);
 
   return (
-    <div className="card border-2 border-green-400 grid p-fluid">
-      <div className="col-12 text-center">
-        <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
-          <label>
-            <p>Choose bank to trade</p>
-            <Dropdown
-              optionLabel="organization"
-              value={wholesalebank}
-              options={wholesalebanks}
-              onChange={(e) => {
-                setWholesalebank(e.target.value);
-              }}
-              placeholder="Select bank to trade"
-            />
-          </label>
-        </div>
-        <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
-          <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Price-{brokenpair.second}
-          </label>
-          <InputNumber
-            id="amount"
-            value={data.price}
-            onChange={(e) => setData({ ...data, price: e.value })}
-            showButtons
-            mode="decimal"
-            min={0}
-            max={10000000}
-            style={{ height: "3rem", fontSize: "1.5rem" }}
-            className="p-inputnumber"
-          ></InputNumber>
-        </div>
-        <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
-          <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Volume-{brokenpair.first}
-          </label>
-          <InputNumber
-            id="amount"
-            value={data.volume}
-            onChange={(e) => setData({ ...data, volume: e.value })}
-            showButtons
-            mode="decimal"
-            min={0}
-            max={10000000}
-            style={{ height: "3rem", fontSize: "1.5rem" }}
-            className="p-inputnumber"
-          ></InputNumber>
-        </div>
-        <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
-          <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Total-{brokenpair.second}
-          </label>
-          <InputNumber
-            id="amount"
-            value={totalvalue}
-            onChange={(e) => setData({ ...data, total: e.value })}
-            showButtons
-            mode="decimal"
-            min={0}
-            max={10000000}
-            style={{ height: "3rem", fontSize: "1.5rem" }}
-            className="p-inputnumber"
-          ></InputNumber>
-        </div>
-        <div className="p-5">
-          <div className="flex align-items-center justify-content-between">
-            <div className="w-6rem text-white font-bold flex align-items-center justify-content-center mr-3">
-              <Dialog
-                header={`Buy ${brokenpair.first} for ${brokenpair.second}`}
-                visible={displayBasic}
-                modal
-                onHide={() => setDisplayBasic(false)}
-              >
-                <Card
-                  style={{ marginBottom: "2rem" }}
-                  className="transition-colors transition-duration-500 hover:bg-gray-900 "
-                >
-                  <div className="flex align-items-center ">
-                    <div>
-                      <p className="text-3xl border-bottom-1 surface-border p-2">
-                        At Price {data.price}
-                      </p>
-                      <p className="text-2xl">Volume {data.volume}</p>
-                      <p className="text-2xl">Total {data.total} </p>
-                    </div>
-                  </div>
-                </Card>
+    <div className="grid table-demo">
+      <div className="col-12">
+        <div className="card border-1 border-100  ">
+          <div className="flex ml-1">
+            <DataTable
+              value={modifiedbuy}
+              scrollable
+              scrollHeight="350px"
+              responsiveLayout="scroll"
+              className="text-xl border-none"
+            >
 
-                <div className="flex align-items-center ">
-                  <Button
-                    type="button"
-                    // icon="pi pi-minus"
-
-                    label=" CONFIRM BUY"
-                    onClick={() => clickAtomBuy()}
-                  />
-                </div>
-              </Dialog>
-              <ToastContainer
-                // position="top-right"
-                // autoClose={5000}
-                // hideProgressBar={false}
-                // newestOnTop={false}
-                // closeOnClick
-                // rtl={false}
-                // pauseOnFocusLoss
-                // draggable
-                // pauseOnHover
-                // theme="colored"
-                className="text-2xl"
-                style={{ width: "70rem" }}
+	    <Column
+                field="price"
+                header="Pair"
+                sortable
+                style={{ width: '55%' }}
+                body={pairnameBodyTemplate}
+                rows={5}
+                className="text-xl border-none "
               />
-              <div className="w-full p-button-success">
-                <Button
-                  onClick={() => setDisplayBasic(true)}
-                  label="PROPOSE BUY"
-                  className="font-bold p-button-success"
-                />
-              </div>
-            </div>
+
+              <Column
+                field="price"
+                header="Price"
+                sortable
+                style={{ width: '35%' }}
+                body={spriceBodyTemplate}
+                rows={5}
+                className="text-xl border-none "
+              />
+              <Column
+                field="price"
+                header="Volume"
+                sortable
+                style={{ width: '35%' }}
+                body={samountBodyTemplate}
+                rows={5}
+                className="text-xl border-none"
+              />
+	   <Column
+              // field="price"
+              header="ID"
+              sortable
+              style={{ width: "35%" }}
+              body={idBodyTemplate}
+              className="text-xl border-none"
+            />
+
+              <Column
+                header="Side"
+                style={{ width: '200px' }}
+                body={buyselltemplate}
+                className="text-xl border-none"
+              />
+
+	    <Column
+                header="Execute"
+                style={{ width: '200px' }}
+                body={executetemplate}
+                className="text-xl border-none"
+              />
+
+
+
+            </DataTable>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default PvpBuyorder;
+export default Pvpbuyproposals;
