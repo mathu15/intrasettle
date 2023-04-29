@@ -1,0 +1,314 @@
+import React, { useState, useEffect } from "react";
+import { Dropdown } from 'primereact/dropdown';
+import { Route, useHistory } from "react-router-dom";
+
+
+import { useToken }  from '../App/useToken';
+import { LoginService }  from '../login/LoginService';
+
+
+
+
+
+
+
+export default function Wbconfigure({ setToken }) {
+
+const Entityinfo = {
+        email: '', 
+        username: '',
+        urlname: '',
+        role:  '', 
+        organization: '', 
+        accountid: '', 
+	centralaccountnumber: '',
+	entityaccountnumber: '',
+	subcentralaccountnumber: '',
+	subentityemail: '',
+	subentityname: '',
+	subentityid: '',
+	entityemail: '',
+	entityname: '',
+	entityid: '',
+	issuerid: '',
+	systemid: '',
+	funderid: '',
+	marker: '',
+};
+
+const [email, setEmail] = useState();
+const [password, setPassword] = useState();
+
+const [entryinfo, setEntryinfo] = useState(Entityinfo);
+const [entityinfo, setEntityinfo] = useState(Entityinfo);
+
+const [error, setError] = useState('');
+
+const [role, setRole] = useState('');
+const [centralbank, setCentralbank] = useState({});
+
+const [organization, setOrganization] = useState('');
+const [centralbanks, setCentralbanks] = useState([]);
+
+
+const history = useHistory();
+
+const roles = [
+    'Wholesale bank'
+];
+
+const loginservice = new LoginService();
+const usetoken = new useToken();
+
+const login = async () => {
+
+    try {
+    const tokendata = await loginservice.loginUser({
+
+      email,
+
+      password
+
+    });
+
+      if(tokendata.token) {
+      usetoken.saveToken(tokendata);
+      setEntityinfo(tokendata.user);
+
+	   setError("Login success")
+//        history.push('/central-bank')
+      }
+      else {
+	   setError("Login failed")
+
+      }
+    } catch(err) {
+
+	   setError("Login failed")
+    }
+
+  }
+const getdata = async () => {
+
+    const tokendata = await loginservice.getlatestuser();
+      if(tokendata.token) {
+      usetoken.saveToken(tokendata);
+      setEntityinfo(tokendata.user);
+      }
+}
+
+
+useEffect(() => { 
+
+     loginservice.getcentralbanks().then(data=> {
+      if(data) {
+      setCentralbanks(data);
+      }
+  });
+}, [])
+
+
+const updatewb = async () => {
+
+    try {
+
+	   console.log(entityinfo);
+
+    const tokendata = await loginservice.updateUserwb(entityinfo,  usetoken.getToken());
+
+    } catch(err) {
+
+           setError("Update failed "+ err)
+    }
+
+  }
+
+const configaccount = async () => {
+
+    try {
+
+
+        const accounts = await loginservice.wbconfigcentralaccounts();
+
+    } catch(err) {
+
+           setError("config account failed "+ err)
+    }
+
+  }
+
+
+
+  return(
+
+   <div className="login-wrapper">
+
+      <h1> Whole sale bank configure </h1>
+
+       <label>
+
+          <p>SubEntity email {entityinfo.subentityemail}</p>
+
+          <input type="text" placeholder="subentityemail" onChange={e =>  setEntityinfo({...entityinfo, subentityemail: e.target.value})}/>
+
+        </label>
+
+        <label>
+
+          <p>Entity email {entityinfo.entityemail}</p>
+
+          <input type="text" placeholder="entityemail" onChange={e =>  setEntityinfo({...entityinfo, entityemail: e.target.value})}/> 
+
+        </label>
+
+	 <label>
+
+          <p>URL name {entityinfo.urlname}</p>
+
+          <input type="text" placeholder="urlname" onChange={e =>  setEntityinfo({...entityinfo, urlname: e.target.value})}/>
+
+        </label>
+
+    <label>
+
+          <p>Entity id {entityinfo.subentityid}</p>
+
+          <input type="text" placeholder="subentityid" onChange={e =>  setEntityinfo({...entityinfo, subentityid: e.target.value})}/>
+
+        </label>
+
+
+	 <label>
+
+          <p>Entity id {entityinfo.entityid}</p>
+
+          <input type="text" placeholder="entityid" onChange={e =>  setEntityinfo({...entityinfo, entityid: e.target.value})}/>
+
+        </label>
+
+
+       <label>
+
+          <p>Entity account number {entityinfo.entityaccountnumber}</p>
+
+          <input type="text" placeholder="entityaccountnumber" onChange={e =>  setEntityinfo({...entityinfo, entityaccountnumber: e.target.value})}/>
+
+        </label>
+
+	   <label>
+
+          <p>Sub Central account number {entityinfo.subcentralaccountnumber}</p>
+
+          <input type="text" placeholder="subcentralaccountnumber" onChange={e =>  setEntityinfo({...entityinfo, subcentralaccountnumber: e.target.value})}/>
+
+        </label>
+
+      <label>
+
+        <label>
+
+          <p>Central account number {entityinfo.centralaccountnumber}</p>
+
+          <input type="text" placeholder="centralaccountnumber" onChange={e =>  setEntityinfo({...entityinfo, centralaccountnumber: e.target.value})}/>
+
+        </label>
+
+      <label>
+
+          <p> Issuerid : {entityinfo.issuerid} </p>
+
+          <input  type="text" placeholder="issuerid" onChange={e => setEntityinfo({...entityinfo, issuerid: e.target.value})}/>
+
+        </label>
+
+   <label>
+
+          <p> Funderid : {entityinfo.funderid} </p>
+
+          <input  type="text" placeholder="funderid" onChange={e => setEntityinfo({...entityinfo, funderid: e.target.value})}/>
+
+        </label>
+
+
+
+	   <label>
+
+          <p> Systemid : {entityinfo.systemid} </p>
+
+          <input  type="text" placeholder="systemid" onChange={e => setEntityinfo({...entityinfo, systemid: e.target.value})}/>
+
+        </label>
+
+	  <label>
+
+          <p>Entity name  : {entityinfo.entityname}</p>
+
+          <input  type="text" placeholder="entityname" onChange={e => setEntityinfo({...entityinfo, entityname: e.target.value})}/>
+
+
+        </label>
+
+  <label>
+
+          <p>Sub Entity name  : {entityinfo.subentityname}</p>
+
+          <input  type="text" placeholder="subentityname" onChange={e => setEntityinfo({...entityinfo, subentityname: e.target.value})}/>
+
+
+        </label>
+
+
+        <label>
+
+          <p>Marker  : {entityinfo.marker}</p>
+
+          <input  type="text" placeholder="marker" onChange={e => setEntityinfo({...entityinfo, marker: e.target.value})}/>
+
+
+        </label>
+
+         <div>
+
+        <label>
+          <p>Organization : {entityinfo.organization}</p>
+          <input type="text" placeholder="Organization" onChange={e => setEntityinfo({...entityinfo, organization: e.target.value})}/> 
+
+        </label>
+        </div>
+        <div>
+        <label>
+          <p>Role : {entityinfo.role}</p>
+          <Dropdown value={role} options={roles} onChange={(e) => setEntityinfo({...entityinfo, role: e.target.value}) } placeholder="Select a Role"/>
+
+        </label>
+        </div>
+        <div>
+
+          <Dropdown optionLabel="entityname" value={centralbank} options={centralbanks} onChange={(e) => setCentralbank(e.target.value) } placeholder="Select centralbank"/>
+
+        </div>
+
+
+        <div>
+        <label>
+          <p>Status</p>
+          {error}
+        </label>
+
+        </div>
+        <div>
+
+        <label>
+          <button onClick={()=> update()} >Update</button>
+          <button onClick={()=> getdata()} >Getdata</button>
+          <button onClick={()=> configaccount()} > Configaccount</button>
+        </label>
+
+        </div>
+
+
+   </div>
+
+  )
+
+};

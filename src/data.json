@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "label": "Home",
+      "icon": "pi pi-fw pi-home"
+    },
+    {
+      "label": "CBDC Manager",
+      "icon": "pi pi-fw pi-edit"
+    },
+    {
+      "label": "Member  controls",
+      "icon": "pi pi-fw pi-edit"
+    },
+    {
+      "label": "Incoming equests",
+      "icon": "pi pi-fw pi-file"
+    },
+    {
+      "label": "treasury dashboard",
+      "icon": "pi pi-fw pi-cog"
+    },
+    {
+      "label": "corda transaction dashboard",
+      "icon": "pi pi-fw pi-cog"
+    },
+    {
+      "label": "reference modals",
+      "icon": "pi pi-fw pi-cog"
+    },
+    {
+      "label": "visibility & reissuance",
+      "icon": "pi pi-fw pi-cog"
+    }
+  ]
+}
