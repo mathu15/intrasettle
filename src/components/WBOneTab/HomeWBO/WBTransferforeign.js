@@ -12,7 +12,7 @@ import WBOTSelectParticipantforeign from "./WBOTransfer/WBOTSelectParticipantfor
 import WBOTEnterAmount from "./WBOTransfer/WBOTEnterAmount";
 import WBOTConfirmTransfer from "./WBOTransfer/WBOTConfirmTransfer";
 import { Satspertoken } from "../../App/Satspertoken";
-import * as _ from "lodash";
+import * as _ from "lodash;";
 
 const WBOTransferforeign = ({
   data1,

@@ -34,39 +34,29 @@ const WBankOne = () => {
   const wizardItems = [
     {
       label: "HOME",
-      icon: "pi text-2xl   text-yellow-600 pi-fw pi-th-large",
+      icon: "pi pi-fw  text-yellow-600 pi-th-large",
       command: () => history.push("/wholesale-bank-one"),
     },
 
     {
-      label: "FX TRADE",
-      icon: "pi text-2xl  text-yellow-600 pi-fw pi-desktop",
+      label: "TRADE SETUP",
+      icon: "pi pi-fw text-yellow-600  pi-desktop",
       command: () => history.push("/wholesale-bank-one/fx-trade"),
     },
     {
-      label: "ORDER BOOK",
-      icon: "pi text-2xl text-yellow-600  pi-fw pi-dollar",
-      command: () => history.push("/wholesale-bank-one/order-book"),
-    },
-    {
-      label: "ATOMIC ORDER BOOK",
-      icon: "pi text-2xl text-yellow-600 pi-fw  pi-desktop",
-      command: () => history.push("/wholesale-bank-one/atomic-order-book"),
-    },
-    {
       label: "BI SWAP ",
-      icon: "pi text-2xl text-yellow-600  pi-fw pi-desktop",
+      icon: "pi pi-fw text-yellow-600  pi-desktop",
       command: () => history.push("/wholesale-bank-one/pvp-bi-swap"),
     },
 
     {
       label: "MEMBER ACCESS",
-      icon: "pi text-2xl  text-yellow-600 pi-fw pi-cog",
+      icon: "pi pi-fw text-yellow-600  pi-cog",
       command: () => history.push("/wholesale-bank-one/access-controls"),
     },
     {
       label: "TREASURY DASHBOARD",
-      icon: "pi text-2xl  text-yellow-600 pi-fw pi-chart-pie",
+      icon: "pi pi-fw text-yellow-600  pi-chart-pie",
       command: () => history.push("/wholesale-bank-one/treasury-dashboard"),
     },
   ];
@@ -90,7 +80,7 @@ const WBankOne = () => {
             <NavLink to="/wb-login">
               <BsBank className="text-3xl mr-3 text-yellow-600" />
               <span className="text-2xl text-white">
-                The {user.organization} , powered by IntraSettle
+                The {user.organization} , powered by Intrasettle
               </span>
             </NavLink>
           </>

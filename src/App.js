@@ -21,7 +21,8 @@ import Devhome from "./containers/devhome/Devhome";
 import Login from "./components/login/Login";
 import Wblogin from "./components/wblogin/Wblogin";
 import Admin from "./containers/Admin/Admin";
-import Register from "./components/login/Register";
+import Admincentral from "./containers/Admin/Admincentral";
+import Adminwholesale from "./containers/Admin/Adminwholesale";
 
 //import { useToken }  from '../App/useToken';
 
@@ -35,11 +36,13 @@ function App() {
         <Route path="/" exact component={Frontpage} />
         <Route path="/devhome" exact component={Devhome} />
         <Route path="/cb-login" exact component={Login} />
-        <Route path="/cb-register" exact component={Register} />
+
         <Route path="/wb-login" exact component={Wblogin} />
         <Route path="/central-bank" component={CentralBank} />
         <Route path="/wholesale-bank-one" component={WBankOne} />
         <Route path="/admin" exact component={Admin} />
+        <Route path="/admincb" exact component={Admincentral} />
+        <Route path="/adminwb" exact component={Adminwholesale} />
       </>
     </Router>
   );

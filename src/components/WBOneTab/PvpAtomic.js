@@ -25,9 +25,11 @@ import * as _ from "lodash";
 import { useToken } from "../App/useToken";
 
 const PvpAtomic = ({ data, setData }) => {
-  const [currencies, setcurrencies] = useState([]);
+  const [currencies, setCurrencies] = useState([]);
   //const [testuser, setTestuser] = useState(theuser);
   const [pairs, setpairs] = useState("");
+  const [firstcurrency, setFirstcurrency] = useState("");
+  const [secondcurrency, setSecondcurrency] = useState("");
   const [chosenpair, setChosenpair] = useState("ABCD-DEFG");
   const [price, setprice] = useState([]);
   const [pastData, setpastData] = useState([]);
@@ -49,6 +51,10 @@ const PvpAtomic = ({ data, setData }) => {
   const [activefour, setActivefour] = useState(0);
   const [activefive, setActivefive] = useState(0);
   const [activesix, setActivesix] = useState(0);
+  const [fraction, setFraction] = useState({
+    first: 1,
+    second: 2,
+  });
   // const text = data.assetid.label;
 
   const usetoken = new useToken();
@@ -118,11 +124,18 @@ const PvpAtomic = ({ data, setData }) => {
         return 0;
       });
 
-      setcurrencies(filtered);
+      setCurrencies(filtered);
       let currencypair = pairs.map((cur, idx) => {
         return cur.pairname;
       });
       setChosenpair(currencypair[0]);
+      setFirstcurrency(filtered[0].firstissuetype);
+      setSecondcurrency(filtered[0].secondissuetype);
+      setFraction({
+        first: filtered[0].firstfraction,
+        second: filtered[0].secondfraction,
+      });
+
       // let amount = pairs.map((cur, idx) => {
       //   return cur.count;
       // });
@@ -297,7 +310,23 @@ const PvpAtomic = ({ data, setData }) => {
   const handleSelect = (e) => {
     //setpairs(e);
     console.log(e.target.value);
+    var thepair = e.target.value;
     setChosenpair(e.target.value);
+    var selected = currencies.filter((xx) => {
+      if (thepair == xx.pairname) {
+        return true;
+      }
+    });
+
+    console.log(selected[0]);
+    if (selected[0]) {
+      setFirstcurrency(selected[0].firstissuetype);
+      setSecondcurrency(selected[0].secondissuetype);
+      setFraction({
+        first: selected[0].firstfraction, //filtered
+        second: selected[0].secondfraction, //filtered
+      });
+    }
   };
 
   const DisplayOne = () => {
@@ -316,6 +345,8 @@ const PvpAtomic = ({ data, setData }) => {
           transactionsplaced={transactionsplaced}
           buy={pastData}
           sell={sellData}
+          firstcurrency={firstcurrency}
+          secondcurrency={secondcurrency}
           chosenpair={chosenpair}
         />
       );
@@ -326,6 +357,8 @@ const PvpAtomic = ({ data, setData }) => {
           transactionstraded={transactionstraded}
           buy={pastData}
           sell={sellData}
+          firstcurrency={firstcurrency}
+          secondcurrency={secondcurrency}
           chosenpair={chosenpair}
         />
       );
@@ -339,6 +372,8 @@ const PvpAtomic = ({ data, setData }) => {
           user={user}
           buy={buyobData}
           sell={sellobData}
+          firstcurrency={firstcurrency}
+          secondcurrency={secondcurrency}
           chosenpair={chosenpair}
           setOrderplacedbuy={setOrderplacedbuy}
           setOrderplacedsell={setOrderplacedsell}
@@ -351,6 +386,8 @@ const PvpAtomic = ({ data, setData }) => {
           user={user}
           buy={buyobData}
           sell={sellobData}
+          firstcurrency={firstcurrency}
+          secondcurrency={secondcurrency}
           chosenpair={chosenpair}
           setOrderplacedbuy={setOrderplacedbuy}
           setOrderplacedsell={setOrderplacedsell}
@@ -386,6 +423,9 @@ const PvpAtomic = ({ data, setData }) => {
         <PvpBuyorder
           user={user}
           price={price}
+          fraction={fraction}
+          firstcurrency={firstcurrency}
+          secondcurrency={secondcurrency}
           chosenpair={chosenpair}
           setOrderplacedbuy={setOrderplacedbuy}
         />
@@ -395,6 +435,9 @@ const PvpAtomic = ({ data, setData }) => {
         <PvpSellorder
           user={user}
           price={price}
+          fraction={fraction}
+          firstcurrency={firstcurrency}
+          secondcurrency={secondcurrency}
           chosenpair={chosenpair}
           setOrderplacedsell={setOrderplacedsell}
         />

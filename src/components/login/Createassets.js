@@ -47,6 +47,8 @@ export default function Createassets({ setToken }) {
   const [amount, setAmount] = useState("");
 
   const [role, setRole] = useState("");
+  const [decimal, setDecimal] = useState(1);
+  const [retaillimit, setRetaillimit] = useState(100000);
   const [assets, setAssets] = useState();
 
   const loginservice = new LoginService();
@@ -54,6 +56,7 @@ export default function Createassets({ setToken }) {
   const history = useHistory();
 
   const roles = ["Central bank", "Wholesale bank", "Exchange"];
+  const decimals = [0, 1, 2];
 
   const issuanceservice = new IssuanceService();
   const usetoken = new useToken();
@@ -86,10 +89,12 @@ export default function Createassets({ setToken }) {
     try {
       var data = {
         symbol: newsymbol,
-	      supply: amount
+        decimal: decimal,
+        retaillimit: retaillimit,
+        supply: amount,
       };
       const tokendata = await loginservice.createasset(data);
-      setError("Success " + tokendata);
+      setError("Success ");
     } catch (err) {
       setError("Update failed " + err);
     }
@@ -124,6 +129,33 @@ export default function Createassets({ setToken }) {
             style={{ height: "4rem", fontSize: "2.0rem" }}
           />
         </div>
+
+        <div className="field text-2xl">
+          <label htmlFor="retaillimit">Retail limit: {retaillimit} </label>
+
+          <InputText
+            id="retaillimit"
+            type="number"
+            placeholder="Retail limit"
+            onChange={(e) => setRetaillimit(e.target.value)}
+            style={{ height: "4rem", fontSize: "2.0rem" }}
+          />
+        </div>
+
+        <div className="field text-2xl">
+          <label htmlFor="decimals">Decimal: {decimal}</label>
+
+          <Dropdown
+            value={decimal}
+            options={decimals}
+            onChange={(e) => setDecimal(e.target.value)}
+            placeholder="Select the decimal "
+            id="decimals"
+            className="text-2xl"
+            style={{ height: "4rem", fontSize: "2.0rem" }}
+          />
+        </div>
+
         <div className="field text-2xl">
           <label htmlFor="newasset">New asset: {newsymbol}</label>
 
@@ -137,7 +169,6 @@ export default function Createassets({ setToken }) {
         </div>
       </div>
       <div className="field text-2xl">
-        {/* Status: */}
         <span className="text-pink-500">{error}</span>
         <div className="flex  align-items-center  justify-content-between">
           {/* <label> */}
@@ -146,6 +177,13 @@ export default function Createassets({ setToken }) {
             onClick={() => createasset()}
             className=" m-3 text-2xl"
           />
+        </div>
+      </div>
+      <div className="field text-2xl">
+        {/* Status: */}
+        <span className="text-pink-500">{error}</span>
+        <div className="flex  align-items-center  justify-content-between">
+          {/* <label> */}
           <Button
             label="Getdata"
             onClick={() => getdata1()}

@@ -12,6 +12,7 @@ import EnterAmountCBTrans from "./CBTransfer/EnterAmountCBTrans";
 import ConfirmTransferCBTrans from "./CBTransfer/ConfirmTransferCBTrans";
 import { Satspertoken } from "../../../App/Satspertoken";
 import * as _ from "lodash";
+
 /*
 function satisfy( assets, symbol, balance) {
         console.log(assets);

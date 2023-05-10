@@ -43,7 +43,6 @@ export default function Autoconfigurewb({ setToken }) {
   const [wholesalebanks, setWholesalebanks] = useState([]);
   const [wholesalebank, setWholesalebank] = useState({});
 
-
   const history = useHistory();
 
   const roles = ["Wholesale bank"];
@@ -51,30 +50,28 @@ export default function Autoconfigurewb({ setToken }) {
   const loginservice = new LoginService();
   const usetoken = new useToken();
 
-   useEffect(() => {
+  useEffect(() => {
     setEmail(wholesalebank.email);
+    getdata();
   }, [wholesalebank]);
 
   useEffect(() => {
     getwholesalebanks();
   }, []);
 
-
   useEffect(() => {
     loginservice.getcentralbanks().then((data) => {
       if (data) {
-      if(Array.isArray(data))
-        setCentralbanks(data);
+        if (Array.isArray(data)) setCentralbanks(data);
       }
     });
   }, []);
 
-   const getwholesalebanks = async () => {
+  const getwholesalebanks = async () => {
     try {
       const tokendata = await loginservice.getwholesalebanks();
       console.log(tokendata);
-      if(Array.isArray(tokendata))
-         setWholesalebanks(tokendata);
+      if (Array.isArray(tokendata)) setWholesalebanks(tokendata);
     } catch (err) {
       setError("Update failed " + err);
     }
@@ -110,6 +107,14 @@ export default function Autoconfigurewb({ setToken }) {
     if (tokendata.token) {
       usetoken.saveToken(tokendata);
       setEntityinfo(tokendata.user);
+
+      var cent = centralbanks.filter((xx) => {
+        if (xx.entityid == tokendata.user.entityid) return true;
+      });
+
+      if (cent[0]) {
+        setCentralbank(cent[0]);
+      }
     }
   };
 
@@ -124,6 +129,7 @@ export default function Autoconfigurewb({ setToken }) {
       );
 
       const accounts = await loginservice.wbconfigcentralaccounts();
+      getdata();
     } catch (err) {
       setError("Update failed " + err);
     }
@@ -132,7 +138,9 @@ export default function Autoconfigurewb({ setToken }) {
   return (
     <div className="col-12 ">
       <div className="card p-fluid">
-        <h5 className="text-3xl text-center">Wholesale Bank AutoConfigure </h5>
+        <h5 className="text-3xl text-center">
+          Choose centrabank and auto configure{" "}
+        </h5>
 
         <div className="field text-2xl">
           <label htmlFor="subentityemail1">
@@ -167,47 +175,14 @@ export default function Autoconfigurewb({ setToken }) {
           />
         </div>
         <div className="field text-2xl">
-          <label htmlFor="urlname">URL name: {entityinfo.urlname}</label>
-
-          <InputText
-            type="text"
-            id="urlname"
-            // placeholder="URL Name"
-            onChange={(e) =>
-              setEntityinfo({ ...entityinfo, urlname: e.target.value })
-            }
-            style={{ height: "4rem", fontSize: "2.0rem" }}
-          />
-        </div>
-        <div className="field text-2xl">
           <label htmlFor="entityname">
             Entity name: {entityinfo.entityname}
           </label>
-
-          <InputText
-            type="text"
-            id="entityname"
-            // placeholder="entityname"
-            onChange={(e) =>
-              setEntityinfo({ ...entityinfo, entityname: e.target.value })
-            }
-            style={{ height: "4rem", fontSize: "2.0rem" }}
-          />
         </div>
         <div className="field text-2xl">
           <label htmlFor="organization">
             Organization: {entityinfo.organization}
           </label>
-
-          <InputText
-            type="text"
-            id="organization"
-            // placeholder="email"
-            onChange={(e) =>
-              setEntityinfo({ ...entityinfo, organization: e.target.value })
-            }
-            style={{ height: "4rem", fontSize: "2.0rem" }}
-          />
         </div>
 
         <div className="field text-2xl">
@@ -226,7 +201,9 @@ export default function Autoconfigurewb({ setToken }) {
           />
         </div>
         <div className="field text-2xl">
-          <label htmlFor="role">Central Bank</label>
+          <label htmlFor="role">
+            Central Bank: {centralbank.organization}{" "}
+          </label>
 
           <Dropdown
             optionLabel="entityname"

@@ -8,9 +8,10 @@ import ConfirmIssuance from "./CBMint/ConfirmIssuance";
 import { Steps } from "primereact/steps";
 import { Button } from "primereact/button";
 import { Satspertoken } from "../../../App/Satspertoken";
-import * as _ from "lodash";
 
 import InformationSubmitted from "../CBDCManager/DefCBDCType/InformationSubmitted";
+import * as _ from "lodash";
+
 /*
 function satisfy( assets, symbol, balance) {
         console.log(assets);

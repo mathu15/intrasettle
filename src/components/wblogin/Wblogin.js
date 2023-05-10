@@ -20,11 +20,13 @@ export default function Wblogin({ setToken }) {
   const [role, setRole] = useState("");
 
   const [organization, setOrganization] = useState("");
+  const [network, setNetwork] = useState("testnet");
 
   const usetoken = new useToken();
   const history = useHistory();
 
   const roles = ["Wholesale bank"];
+  const networks = ["testnet", "livenet"];
 
   const loginservice = new LoginService();
 
@@ -42,6 +44,7 @@ export default function Wblogin({ setToken }) {
         email,
 
         password,
+        network,
       });
 
       if (tokendata.token) {
@@ -49,7 +52,12 @@ export default function Wblogin({ setToken }) {
         await refresh();
         //usetoken.getToken();
         setError("Login success");
-        history.push("/wholesale-bank-one");
+
+        if (tokendata.user.subcentralaccountnumber == "") {
+          history.push("/adminwb/");
+        } else {
+          history.push("/wholesale-bank-one");
+        }
       }
     } catch (err) {
       setError("Login failed " + err);
@@ -70,15 +78,17 @@ export default function Wblogin({ setToken }) {
         password,
         role,
         organization,
+        network,
       });
 
       if (tokendata.token) {
-        usetoken.setToken(tokendata);
-        setError("Login success");
-        history.push("/wholesale-bank-one");
+        usetoken.saveToken(tokendata);
+        setError("Register  success");
+        history.push("/adminwb");
       }
     } catch (err) {
-      setError("Login failed");
+      console.log(err);
+      setError("Register failed");
     }
   };
 
@@ -91,6 +101,7 @@ export default function Wblogin({ setToken }) {
           password,
           role,
           organization,
+          network,
         },
         usetoken.getToken()
       );
@@ -194,7 +205,7 @@ export default function Wblogin({ setToken }) {
     // </div>
 
     <div className="grid justify-content-center">
-      <div className="col-12 md:col-4">
+      <div className="col-12 md:col-6">
         <Link to="/">
           <img
             className="h-8rem w-full p-3"
@@ -213,7 +224,7 @@ export default function Wblogin({ setToken }) {
               value={wholesalebank}
               options={wholesalebanks}
               onChange={(e) => setWholesalebank(e.target.value)}
-              placeholder="Select a central bank"
+              placeholder="Select a wholesale bank"
               className="text-2xl"
               style={{ height: "4rem", fontSize: "2.0rem" }}
             />
@@ -265,7 +276,21 @@ export default function Wblogin({ setToken }) {
               style={{ height: "4rem", fontSize: "2.0rem" }}
             />
           </div>
+          <div className="field text-2xl">
+            <label htmlFor="network">Network : {network}</label>
+
+            <Dropdown
+              value={network}
+              options={networks}
+              onChange={(e) => setNetwork(e.target.value)}
+              placeholder="Select a Network"
+              id="role"
+              className="text-2xl"
+              style={{ height: "4rem", fontSize: "2.0rem" }}
+            />
+          </div>
         </div>
+
         <div className="field text-2xl">
           {/* Status:  */}
           <span className="text-pink-500">{error}</span>
@@ -274,13 +299,13 @@ export default function Wblogin({ setToken }) {
             <Button
               label="Login"
               onClick={() => login()}
-              className="  text-2xl w-full "
+              className=" m-3 text-2xl"
             />
-            {/* <Button
+            <Button
               label="Register"
               onClick={() => register()}
-              className=" m-3 text-2xl w-full"
-            /> */}
+              className=" m-3 text-2xl"
+            />
             {/* </label> */}
           </div>
         </div>

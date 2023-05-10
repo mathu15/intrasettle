@@ -9,12 +9,22 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { InputNumber } from "primereact/inputnumber";
 import * as _ from "lodash";
-const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
+
+const PvpBuyorder = ({
+  user,
+  price,
+  fraction,
+  firstcurrency,
+  secondcurrency,
+  chosenpair,
+  setOrderplacedbuy,
+}) => {
   const [displayBasic, setDisplayBasic] = useState(false);
   const [totalvalue, setTotalvalue] = useState(0);
   const [wholesalebanks, setWholesalebanks] = useState([]);
   const [wholesalebank, setWholesalebank] = useState({});
   const [organization, setOrganization] = useState("");
+  //const [fraction, setFraction] = useState(1);
 
   const [data, setData] = useState({
     price: price,
@@ -29,11 +39,6 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
     total: 0,
   });
 	*/
-
-  const [brokenpair, setBrokenpair] = useState({
-    first: chosenpair.split("-")[0],
-    second: chosenpair.split("-")[1],
-  });
 
   //  const totalvalue = data.price * data.volume;
 
@@ -67,8 +72,8 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
     var ret = await issuanceServiceWBOB.placeatombuyorder(
       wholesalebank.subcentralaccountnumber,
       chosenpair,
-      brokenpair.first,
-      brokenpair.second,
+      firstcurrency,
+      secondcurrency,
       data.price,
       data.volume
     );
@@ -77,8 +82,8 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
       ret = await issuanceServiceWBOB.placeatombuyorder(
         wholesalebank.subcentralaccountnumber,
         chosenpair,
-        brokenpair.first,
-        brokenpair.second,
+        firstcurrency,
+        secondcurrency,
         data.price,
         data.volume
       );
@@ -96,9 +101,10 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
       alert(
         "Order failed : needed " +
           ret.needed +
-          " " +
+          " of " +
           ret.neededsymbol +
-          " check balance in trading account"
+          " found " +
+          ret.found
       );
     }
 
@@ -110,7 +116,7 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
   };
 
   const showSuccess = () => {
-    toast.success("created successfully", {
+    toast.success("Order placed ", {
       // position: "top-right",
       // autoClose: 5000,
       // hideProgressBar: false,
@@ -137,13 +143,6 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
     setData({ ...data, total: tmpvalue });
   }, [data.price, data.volume]);
 
-  useEffect(() => {
-    setBrokenpair({
-      first: chosenpair.split("-")[0],
-      second: chosenpair.split("-")[1],
-    });
-  }, [chosenpair]);
-
   return (
     <div className="card border-2 border-green-400 grid p-fluid">
       <div className="col-12 text-center">
@@ -163,12 +162,14 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
         </div>
         <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
           <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Price-{brokenpair.second}
+            Price-{secondcurrency}
           </label>
           <InputNumber
             id="amount"
             value={data.price}
             onChange={(e) => setData({ ...data, price: e.value })}
+            minFractionDigits={fraction.second}
+            maxFractionDigits={fraction.second}
             showButtons
             mode="decimal"
             min={0}
@@ -179,13 +180,15 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
         </div>
         <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
           <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Volume-{brokenpair.first}
+            Volume-{firstcurrency}
           </label>
           <InputNumber
             id="amount"
             value={data.volume}
             onChange={(e) => setData({ ...data, volume: e.value })}
             showButtons
+            minFractionDigits={fraction.first}
+            maxFractionDigits={fraction.first}
             mode="decimal"
             min={0}
             max={10000000}
@@ -195,12 +198,14 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
         </div>
         <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
           <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Total-{brokenpair.second}
+            Total-{secondcurrency}
           </label>
           <InputNumber
             id="amount"
             value={totalvalue}
             onChange={(e) => setData({ ...data, total: e.value })}
+            minFractionDigits={fraction.second}
+            maxFractionDigits={fraction.second}
             showButtons
             mode="decimal"
             min={0}
@@ -213,7 +218,7 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
           <div className="flex align-items-center justify-content-between">
             <div className="w-6rem text-white font-bold flex align-items-center justify-content-center mr-3">
               <Dialog
-                header={`Buy ${brokenpair.first} for ${brokenpair.second}`}
+                header={`Buy ${firstcurrency} for ${secondcurrency}`}
                 visible={displayBasic}
                 modal
                 onHide={() => setDisplayBasic(false)}
@@ -228,7 +233,7 @@ const PvpBuyorder = ({ user, price, chosenpair, setOrderplacedbuy }) => {
                         At Price {data.price}
                       </p>
                       <p className="text-2xl">Volume {data.volume}</p>
-                      <p className="text-2xl">Total {data.total} </p>
+                      <p className="text-2xl">Total {data.total.toFixed(2)} </p>
                     </div>
                   </div>
                 </Card>

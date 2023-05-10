@@ -4,7 +4,7 @@ import { IssuanceServiceWBFx } from "./IssuanceServiceWBFx";
 import { Satspertoken } from "../../App/Satspertoken";
 
 // page for displaying chaertdata
-const WBFxTraderAssets = ({ assets }) => {
+const WBFxTraderAssets = ({ assets, transacted, setTransacted }) => {
   // initail value for chart data
 
   const [data, setData] = useState();
@@ -63,6 +63,7 @@ const WBFxTraderAssets = ({ assets }) => {
           setAmount(dataset1);
           setIssuetype(dataset2);
           console.log("arrData", dataset1, dataset2);
+          setTransacted({ ...transacted, trader: false });
         })
         .catch((e) => {
           console.log("error", e);

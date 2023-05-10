@@ -1,4 +1,4 @@
-import React, { useState }  from "react";
+import React, { useState } from "react";
 import { NavLink, Route, useHistory } from "react-router-dom";
 import { Menubar } from "primereact/menubar";
 import { BsBank, BsGlobe2 } from "react-icons/bs";
@@ -15,15 +15,15 @@ import CBVisiblity from "../../components/CBtabmenu/CBVisiblity";
 
 const CentralBank = () => {
   const history = useHistory();
-//  if(useToken.getUser().marker)
+  //  if(useToken.getUser().marker)
   const usetoken = new useToken();
   const [user, setUser] = useState(usetoken.getUser());
 
   const Redirectnonconfigured = () => {
-     if(!user || user.marker == ''){
-	     alert ("The system is not configured");
+    if (!user || user.marker == "") {
+      alert("The system is not configured");
       history.push("/");
-     }
+    }
   };
 
   const wizardItems = [
@@ -55,7 +55,7 @@ const CentralBank = () => {
     {
       label: "TRANSACTION DASHBOARD",
       icon: "pi text-2xl text-blue-500  pi-fw pi-book",
-      command: () => history.push("/central-bank/moneyswipe-dashboard"),
+      command: () => history.push("/central-bank/transaction-dashboard"),
     },
     {
       label: "TOPUP ISSUANCE",
@@ -81,15 +81,12 @@ const CentralBank = () => {
         // model={items.cbank}
         end={
           <>
-
-     <NavLink to="/cb-login">
+            <NavLink to="/cb-login">
               <BsGlobe2 className="text-3xl mr-3 text-blue-500" />
               <span className="text-2xl text-white">
-                The {user.organization} , powered by IntraSettle
+                The {user.organization} , powered by Intrasettle
               </span>
             </NavLink>
-
-
           </>
         }
         // style={{ fontSize: "1.4rem" }}
@@ -116,10 +113,6 @@ const CentralBank = () => {
       <Route
         path={"/central-bank/treasury-dashboard"}
         component={CBTreasuryDashboard}
-      />
-      <Route
-        path={"/central-bank/moneyswipe-dashboard"}
-        component={CBMoneySwipeDash}
       />
       <Route
         path={"/central-bank/reference-modals"}

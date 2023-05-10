@@ -10,7 +10,15 @@ import "react-toastify/dist/ReactToastify.css";
 import { InputNumber } from "primereact/inputnumber";
 import * as _ from "lodash";
 
-const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
+const PvpSellorder = ({
+  user,
+  price,
+  fraction,
+  firstcurrency,
+  secondcurrency,
+  chosenpair,
+  setOrderplacedsell,
+}) => {
   const [displayBasic, setDisplayBasic] = useState(false);
   const [totalvalue, setTotalvalue] = useState(0);
   const [wholesalebanks, setWholesalebanks] = useState([]);
@@ -29,10 +37,6 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
     volume: 0,
     total: 0,
   });
-  const [brokenpair, setBrokenpair] = useState({
-    first: chosenpair.split("-")[0],
-    second: chosenpair.split("-")[1],
-  });
 
   useEffect(() => {
     getwholesalebanks();
@@ -50,13 +54,6 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
       setWholesalebanks(rem);
     } catch (err) {}
   };
-
-  useEffect(() => {
-    setBrokenpair({
-      first: chosenpair.split("-")[0],
-      second: chosenpair.split("-")[1],
-    });
-  }, [chosenpair]);
 
   useEffect(() => {
     const tmpvalue = data.price * data.volume;
@@ -79,8 +76,8 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
     var ret = await issuanceServiceWBOB.placeatomsellorder(
       wholesalebank.subcentralaccountnumber,
       chosenpair,
-      brokenpair.first,
-      brokenpair.second,
+      firstcurrency,
+      secondcurrency,
       data.price,
       data.volume
     );
@@ -90,8 +87,8 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
       ret = await issuanceServiceWBOB.placeatomsellorder(
         wholesalebank.subcentralaccountnumber,
         chosenpair,
-        brokenpair.first,
-        brokenpair.second,
+        firstcurrency,
+        secondcurrency,
         data.price,
         data.volume
       );
@@ -111,7 +108,8 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
           ret.needed +
           " " +
           ret.neededsymbol +
-          " check balance in trading account"
+          " found " +
+          ret.found
       );
     }
 
@@ -123,7 +121,7 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
   };
 
   const showSuccess = () => {
-    toast.success("created successfully", {
+    toast.success("Order placed ", {
       // position: "top-right",
       // autoClose: 5000,
       // hideProgressBar: false,
@@ -168,13 +166,15 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
 
         <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
           <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Price-{brokenpair.second}
+            Price-{secondcurrency}
           </label>
           <InputNumber
             id="amount"
             value={data.price}
             onChange={(e) => setData({ ...data, price: e.value })}
             showButtons
+            minFractionDigits={fraction.second}
+            maxFractionDigits={fraction.second}
             mode="decimal"
             min={0}
             max={10000000}
@@ -184,13 +184,15 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
         </div>
         <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
           <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Volume-{brokenpair.first}
+            Volume-{firstcurrency}
           </label>
           <InputNumber
             id="amount"
             value={data.volume}
             onChange={(e) => setData({ ...data, volume: e.value })}
             showButtons
+            minFractionDigits={fraction.first}
+            maxFractionDigits={fraction.first}
             mode="decimal"
             min={0}
             max={10000000}
@@ -200,12 +202,14 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
         </div>
         <div className="flex justify-space-between gap-4 text-center card border-1 border-100 bg-gray-800 text-xl w-full">
           <label style={{ fontSize: "1.2rem" }} htmlFor="amount">
-            Total-{brokenpair.second}
+            Total-{secondcurrency}
           </label>
           <InputNumber
             id="amount"
             value={totalvalue}
             onChange={(e) => setData({ ...data, total: e.value })}
+            minFractionDigits={fraction.second}
+            maxFractionDigits={fraction.second}
             showButtons
             mode="decimal"
             min={0}
@@ -218,7 +222,7 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
           <div className="flex align-items-center justify-content-between">
             <div className="w-6rem text-white font-bold flex align-items-center justify-content-center mr-3">
               <Dialog
-                header={`Buy ${brokenpair.first} for ${brokenpair.second} `}
+                header={`Sell ${firstcurrency} for ${secondcurrency}`}
                 visible={displayBasic}
                 modal
                 onHide={() => setDisplayBasic(false)}
@@ -233,7 +237,7 @@ const PvpSellorder = ({ user, price, chosenpair, setOrderplacedsell }) => {
                         At Price {data.price}
                       </p>
                       <p className="text-2xl">Volume {data.volume}</p>
-                      <p className="text-2xl">Total {data.total} </p>
+                      <p className="text-2xl">Total {data.total.toFixed(2)} </p>
                     </div>
                   </div>
                 </Card>

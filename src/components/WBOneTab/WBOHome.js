@@ -9,8 +9,10 @@ import WBCBDCAssets from "./HomeWBO/WBCBDCAssets";
 import WBBonds from "./HomeWBO/WBBonds";
 import WBCbdcStates from "./HomeWBO/WBCbdcStates";
 import WBMAC from "./HomeWBO/WBMAC";
-import { WB01IssuanceService } from './HomeWBO/WB01IssuanceService';
+import { useToken } from "../App/useToken";
+import { LoginService } from "../devlogin/LoginService";
 
+import { WB01IssuanceService } from "./HomeWBO/WB01IssuanceService";
 
 const WBOHome = ({ data, setData }) => {
   const [activeone, setActiveone] = useState(0);
@@ -19,36 +21,65 @@ const WBOHome = ({ data, setData }) => {
   const [accountowners, setAccountowners] = useState([]);
   const [transactionhappened, setTransactionhappened] = useState(false);
 
+  const issuanceservice = new WB01IssuanceService();
+  const loginservice = new LoginService();
+  const usetoken = new useToken();
 
-const issuanceservice = new WB01IssuanceService();
+  const getlatestdata = async () => {
+    const tokendata = await loginservice.getlatestuser();
+    if (tokendata.token) {
+      usetoken.saveToken(tokendata);
+    }
+  };
 
   useEffect(() => {
-        issuanceservice.getaccountowners().then(data=> {
-	var yy = data.list.filter(xx=> {
-		 if(!(xx.centralenable == 'disabled' || xx.subenable == 'disabled')) return true;
-		});
-        setAccountowners(yy ) ;       
-        });
+    getlatestdata();
+    issuanceservice.getaccountowners().then((data) => {
+      var yy = data.list.filter((xx) => {
+        if (!(xx.centralenable == "disabled" || xx.subenable == "disabled"))
+          return true;
+      });
+      setAccountowners(yy);
+    });
   }, []);
-
 
   const DisplayOne = () => {
     if (activeone === 0) {
-      return <WBTransferCBDC data={data} setData={setData} accountowners={accountowners}  setTransactionhappened={setTransactionhappened} />;
+      return (
+        <WBTransferCBDC
+          data={data}
+          setData={setData}
+          accountowners={accountowners}
+          setTransactionhappened={setTransactionhappened}
+        />
+      );
     } else if (activeone === 1) {
-      return <WBTransferforeign data={data} setData={setData} accountowners={accountowners} setTransactionhappened={setTransactionhappened}  />;
+      return (
+        <WBTransferforeign
+          data={data}
+          setData={setData}
+          accountowners={accountowners}
+          setTransactionhappened={setTransactionhappened}
+        />
+      );
     }
   };
   const DisplayTwo = () => {
     if (activetwo === 0) {
-      return <WBCBDCAssets transactionhappened={transactionhappened}  />;
+      return <WBCBDCAssets transactionhappened={transactionhappened} />;
     } else if (activetwo === 1) {
       return <WBBonds data={data} setData={setData} />;
     }
   };
   const DisplayThree = () => {
     if (activethree === 0) {
-      return <WBCbdcStates accountowners={accountowners} transactionhappened={transactionhappened} setTransactionhappened={setTransactionhappened} />;
+      return (
+        <WBCbdcStates
+          accountowners={accountowners}
+          transactionhappened={transactionhappened}
+          setTransactionhappened={setTransactionhappened}
+        />
+      );
     } else if (activethree === 1) {
       return <WBMAC data={data} setData={setData} />;
     }
@@ -64,7 +95,6 @@ const issuanceservice = new WB01IssuanceService();
       label: "FOREIGN TRANSFER",
       icon: "pi pi-fw pi-arrows-alt",
     },
-
   ];
 
   const dataItems = [
@@ -72,7 +102,7 @@ const issuanceservice = new WB01IssuanceService();
       label: "CBDC ASSETS",
       icon: "pi pi-fw pi-dollar",
     },
-/*
+    /*
     {
       label: "BONDS",
       icon: "pi pi-fw pi-sun",
@@ -85,7 +115,7 @@ const issuanceservice = new WB01IssuanceService();
       label: "CBDC TRANSACTIONs",
       icon: "pi pi-fw pi-user",
     },
-/*
+    /*
     {
       label: "MEMBER ACCESS STATES",
       icon: "pi pi-fw pi-user",

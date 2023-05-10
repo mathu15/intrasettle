@@ -5,7 +5,7 @@ import { IssuanceServiceWBFx } from "./IssuanceServiceWBFx";
 import { Satspertoken } from "../../App/Satspertoken";
 
 // page for displaying chaertdata
-const WBFxOperationAssets = ({ assets }) => {
+const WBFxOperationAssets = ({ assets, transacted, setTransacted }) => {
   // initail value for chart data
   var issuanceservice = new IssuanceServiceWBFx();
   var satspertoken = new Satspertoken();
@@ -65,13 +65,14 @@ const WBFxOperationAssets = ({ assets }) => {
           setAmount(dataset1);
           setIssuetype(dataset2);
           console.log("arrData", dataset1, dataset2);
+          setTransacted({ ...transacted, operation: false });
         })
         .catch((e) => {
           console.log("error", e);
         });
     };
     fetchData();
-  }, []);
+  }, [transacted]);
   const [lightOptions] = useState({
     indexAxis: "x",
     elements: {

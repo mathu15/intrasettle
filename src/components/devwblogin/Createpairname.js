@@ -1,196 +1,186 @@
-import React, {useEffect, useState } from "react";
-import { Dropdown } from 'primereact/dropdown';
+import React, { useEffect, useState } from "react";
+import { Dropdown } from "primereact/dropdown";
 import { Route, useHistory } from "react-router-dom";
 
+import { useToken } from "../App/useToken";
+import { LoginService } from "../devlogin/LoginService";
 
-import { useToken }  from '../App/useToken';
-import { LoginService }  from '../devlogin/LoginService';
-
-import { IssuanceService } from '../CBtabmenu/CBHome/IssuanceService';
-
-
-
+import { IssuanceService } from "../CBtabmenu/CBHome/IssuanceService";
 
 export default function Createpairname({ setToken }) {
+  const Entityinfo = {
+    email: "",
+    username: "",
+    urlname: "",
+    role: "",
+    organization: "",
+    accountid: "",
+    entityaccountnumber: "",
+    centralaccountnumber: "",
+    entityemail: "",
+    entityname: "",
+    systemid: "",
+    issuerid: "",
+    funderid: "",
+    entityid: "",
+    marker: "",
+  };
 
-const Entityinfo = {
-        email: '', 
-        username: '',
-        urlname: '',
-        role:  '', 
-        organization: '', 
-        accountid: '', 
-	entityaccountnumber: '',
-	centralaccountnumber: '',
-	entityemail: '',
-	entityname: '',
-	systemid: '',
-	issuerid: '',
-	funderid: '',
-	entityid: '',
-	marker: '',
-};
+  const Sendinfo = {
+    systemid: "",
+    toaccountnumber: "",
+    symbol: "",
+    amount: "",
+  };
 
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
 
-const Sendinfo = {
-	systemid: '',
-	toaccountnumber: '',
-	symbol : '',
-	amount : ''
-};
+  const [sendinfo, setSendinfo] = useState(Sendinfo);
+  const [entityinfo, setEntityinfo] = useState(Entityinfo);
 
-const [email, setEmail] = useState();
-const [password, setPassword] = useState();
+  const [error, setError] = useState("");
+  const [symbol, setSymbol] = useState("");
+  const [selectedpair, setSelectedpair] = useState({});
+  const [pairname, setPairname] = useState("");
+  const [firstissuetype, setFirstissuetype] = useState("");
+  const [secondissuetype, setSecondissuetype] = useState("");
+  const [amount, setAmount] = useState("");
 
-const [sendinfo, setSendinfo] = useState(Sendinfo);
-const [entityinfo, setEntityinfo] = useState(Entityinfo);
+  const [role, setRole] = useState("");
+  const [assets, setAssets] = useState();
+  const [pairs, setPairs] = useState([]);
 
-const [error, setError] = useState('');
-const [symbol, setSymbol] = useState('');
-const [selectedpair, setSelectedpair] = useState({});
-const [pairname, setPairname] = useState('');
-const [amount, setAmount] = useState('');
+  const loginservice = new LoginService();
 
-const [role, setRole] = useState('');
-const [assets, setAssets] = useState();
-const [pairs, setPairs] = useState([]);
+  const history = useHistory();
 
-const loginservice = new LoginService();
+  const roles = ["Central bank", "Wholesale bank", "Exchange"];
 
+  const issuanceservice = new IssuanceService();
+  const usetoken = new useToken();
 
-const history = useHistory();
+  useEffect(() => {
+    var user = usetoken.getUser();
+    setEntityinfo(user);
+    var xx = async () => {
+      var pairs = await issuanceservice.getpairs();
+      setPairs(pairs);
+    };
 
-const roles = [
-    'Central bank','Wholesale bank','Exchange'
-];
-
-const issuanceservice = new IssuanceService();
-const usetoken = new useToken();
-
-   useEffect(() => {
-
-      var user = usetoken.getUser();
-      setEntityinfo(user);
-     var xx = async () => {
-   var pairs = await issuanceservice.getpairs();
-   setPairs(pairs);
-	   }
-
-	   xx();
-
+    xx();
   }, []); //
 
-const getdata1 = async () => {
-	 const tokendata = await loginservice.getlatestuser();
-      if(tokendata.token) {
+  const getdata1 = async () => {
+    const tokendata = await loginservice.getlatestuser();
+    if (tokendata.token) {
       usetoken.saveToken(tokendata);
       setEntityinfo(tokendata.user);
-      }
-
-}
-
-const getpairs = async () => {
-   var pairs = await issuanceservice.getpairs();
-   setPairs(pairs);
-}
-
-const getassets1 = async () => {
-   var assets = await issuanceservice.getassets();
-   setAssets(assets);
-}
-
-const disablepair = async () => {
-
-     var data = {
-                   pairname: selectedpair.pairname
-           };
-
-	
-   var assets = await loginservice.disablepairname(data);
-}
-
-
-const enablepair = async () => {
-   var data = {
-                   pairname: selectedpair.pairname
-           };
-
-   var assets = await loginservice.enablepairname(data);
-}
-
-
-const createpair = async () => {
-
-    try {
-
-	   var data = {
-		   pairname: pairname
-	   };
-    const tokendata = await loginservice.createpairname(data);
-           setError("Success "+ tokendata)
-
-    } catch(err) {
-
-           setError("Update failed "+ err)
     }
+  };
 
-  }
+  const getpairs = async () => {
+    var pairs = await issuanceservice.getpairs();
+    setPairs(pairs);
+  };
 
+  const getassets1 = async () => {
+    var assets = await issuanceservice.getassets();
+    setAssets(assets);
+  };
 
+  const disablepair = async () => {
+    var data = {
+      pairname: selectedpair.pairname,
+    };
 
-  return(
+    var assets = await loginservice.disablepairname(data);
+  };
 
-   <div className="login-wrapper">
+  const enablepair = async () => {
+    var data = {
+      pairname: selectedpair.pairname,
+    };
 
+    var assets = await loginservice.enablepairname(data);
+  };
+
+  const createpair = async () => {
+    try {
+      var data = {
+        pairname: pairname,
+        firstissuetype: firstissuetype,
+        secondissuetype: secondissuetype,
+      };
+      const tokendata = await loginservice.createpairname(data);
+      setError("Success " + tokendata);
+    } catch (err) {
+      setError("Update failed " + err);
+    }
+  };
+
+  return (
+    <div className="login-wrapper">
       <h1>Create pair for atomic swap</h1>
 
-    <label>
-          <p>Pairs </p>
-          <Dropdown optionLabel="pairname"  options={pairs} onChange={(e) => setSelectedpair(e.target.value)}   placeholder="Select a pair"/>
+      <label>
+        <p>Pairs </p>
+        <Dropdown
+          optionLabel="pairname"
+          options={pairs}
+          onChange={(e) => setSelectedpair(e.target.value)}
+          placeholder="Select a pair"
+        />
+      </label>
 
-        </label>
+      <label>
+        <p>New pairname {pairname}</p>
 
+        <input
+          type="text"
+          placeholder="new pairname"
+          onChange={(e) => setPairname(e.target.value)}
+        />
+      </label>
 
+      <label>
+        <p>First symbol </p>
 
+        <input
+          type="text"
+          placeholder="first"
+          onChange={(e) => setFirstissuetype(e.target.value)}
+        />
+      </label>
 
-	 <label>
+      <label>
+        <p>Second symbol </p>
 
-          <p>New pairname {pairname}</p>
+        <input
+          type="text"
+          placeholder=" second"
+          onChange={(e) => setSecondissuetype(e.target.value)}
+        />
+      </label>
 
-          <input type="text" placeholder="new pairname" onChange={e =>  setPairname( e.target.value) }/>
+      <label>
+        <p>Selected pairname {selectedpair.pairname}</p>
+      </label>
 
-        </label>
-
-
-	 <label>
-
-          <p>Selected pairname {selectedpair.pairname}</p>
-
-
-        </label>
-
-
-        <div>
+      <div>
         <label>
           <p>Status</p>
           {error}
         </label>
-
-        </div>
-        <div>
-
+      </div>
+      <div>
         <label>
-          <button onClick={()=> createpair () } >Create pair </button>
-          <button onClick={()=> disablepair()} >Disable pair</button>
-          <button onClick={()=> enablepair()} >Enable  pair</button>
-          <button onClick={()=> getpairs()} >Getpairs</button>
+          <button onClick={() => createpair()}>Create pair </button>
+          <button onClick={() => disablepair()}>Disable pair</button>
+          <button onClick={() => enablepair()}>Enable pair</button>
+          <button onClick={() => getpairs()}>Getpairs</button>
         </label>
-
-        </div>
-
-
-   </div>
-
-  )
-
-};
+      </div>
+    </div>
+  );
+}

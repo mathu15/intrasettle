@@ -16,7 +16,7 @@ import WBOFxSelecFromAcc from "./WBOFxTransfer/WBOFxSelecFromAcc";
 import WBOFxSelecToAcc from "./WBOFxTransfer/WBOFxSelecToAcc";
 import { Satspertoken } from "../../App/Satspertoken";
 
-const WBOFxTransferCBDC = () => {
+const WBOFxTransferCBDC = ({ transacted, setTransacted }) => {
   //curent page for  steps is set to default index 0
   const [activeIndex, setActiveIndex] = useState(0);
   const [assets, setAssets] = useState([]);
@@ -177,6 +177,7 @@ const WBOFxTransferCBDC = () => {
         data.amount
       );
     }
+    setTransacted({ ...transacted, operation: true, trader: true });
   };
 
   const showSuccess = () => {

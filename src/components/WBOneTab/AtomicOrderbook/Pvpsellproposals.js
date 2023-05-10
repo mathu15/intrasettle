@@ -5,11 +5,14 @@ import { Button } from "primereact/button";
 import { IssuanceServiceWBOB } from "./issuanceServiceWBOB";
 
 import { Column } from "primereact/column";
-import * as _ from 'lodash';
+import * as _ from "lodash";
+
 function Pvpsellproposals({
   user,
   buy,
   sell,
+  firstcurrency,
+  secondcurrency,
   chosenpair,
   setOrderplacedbuy,
   setOrderplacedsell,
@@ -51,8 +54,6 @@ function Pvpsellproposals({
 
   const acceptatomsellorder = async (rowData) => {
     var chosenpair = rowData.pairname;
-    var first = chosenpair.split("-")[0];
-    var second = chosenpair.split("-")[1];
 
     var price = rowData.sellprice;
     var amount = rowData.sellamount;
@@ -61,8 +62,8 @@ function Pvpsellproposals({
     var ret = await issuanceServiceWBOB.acceptatomsellorder(
       chosenpair,
       rowData,
-      first,
-      second,
+      firstcurrency,
+      secondcurrency,
       price,
       amount
     );
@@ -72,8 +73,8 @@ function Pvpsellproposals({
       ret = await issuanceServiceWBOB.acceptatomsellorder(
         chosenpair,
         rowData,
-        first,
-        second,
+        firstcurrency,
+        secondcurrency,
         price,
         amount
       );
@@ -107,8 +108,6 @@ function Pvpsellproposals({
 
   const rejectatomsellorder = async (rowData) => {
     var chosenpair = rowData.pairname;
-    var first = chosenpair.split("-")[0];
-    var second = chosenpair.split("-")[1];
 
     var price = rowData.sellprice;
     var amount = rowData.sellamount;
@@ -117,8 +116,8 @@ function Pvpsellproposals({
     var ret = await issuanceServiceWBOB.rejectatomsellorder(
       chosenpair,
       rowData,
-      first,
-      second,
+      firstcurrency,
+      secondcurrency,
       price,
       amount
     );
@@ -128,8 +127,8 @@ function Pvpsellproposals({
       ret = await issuanceServiceWBOB.rejectatomsellorder(
         chosenpair,
         rowData,
-        first,
-        second,
+        firstcurrency,
+        secondcurrency,
         price,
         amount
       );
@@ -173,8 +172,6 @@ function Pvpsellproposals({
   };
   const cancelthis = async (rowData) => {
     var chosenpair = rowData.pairname;
-    var first = chosenpair.split("-")[0];
-    var second = chosenpair.split("-")[1];
 
     var price = rowData.sellprice;
     var amount = rowData.sellamount;
@@ -183,8 +180,8 @@ function Pvpsellproposals({
     var ret = await issuanceServiceWBOB.canceloneprepare(
       chosenpair,
       rowData,
-      first,
-      second,
+      firstcurrency,
+      secondcurrency,
       price,
       amount
     );
@@ -194,8 +191,8 @@ function Pvpsellproposals({
       ret = await issuanceServiceWBOB.canceloneprepare(
         chosenpair,
         rowData,
-        first,
-        second,
+        firstcurrency,
+        secondcurrency,
         price,
         amount
       );
@@ -287,9 +284,6 @@ function Pvpsellproposals({
     }
   };
   const preparematchforatomsellorder = async (rowData) => {
-    var first = chosenpair.split("-")[0];
-    var second = chosenpair.split("-")[1];
-
     //    /atomicexchange/createmakeorder
     var price = rowData.sellprice;
     var volume = rowData.sellamount;
@@ -297,8 +291,8 @@ function Pvpsellproposals({
     var ret = await issuanceServiceWBOB.placeatombuyorder(
       "",
       chosenpair,
-      first,
-      second,
+      firstcurrency,
+      secondcurrency,
       price,
       volume
     );
@@ -307,8 +301,8 @@ function Pvpsellproposals({
       ret = await issuanceServiceWBOB.placeatombuyorder(
         "",
         chosenpair,
-        first,
-        second,
+        firstcurrency,
+        secondcurrency,
         price,
         volume
       );
@@ -329,7 +323,8 @@ function Pvpsellproposals({
           ret.needed +
           " " +
           ret.neededsymbol +
-          " check balance in trading account"
+          " found " +
+          ret.found
       );
 
       return;

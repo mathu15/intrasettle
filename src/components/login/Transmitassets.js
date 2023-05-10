@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+//import { ConsoleLogger } from '../Log/Logger';
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -56,6 +57,7 @@ export default function Transmitassets({ setToken }) {
 
   const issuanceservice = new IssuanceService();
   const usetoken = new useToken();
+  //  const consolelogger = new ConsoleLogger();
 
   useEffect(() => {
     var user = usetoken.getUser();
@@ -83,14 +85,14 @@ export default function Transmitassets({ setToken }) {
 
   const sendtoentity = async () => {
     try {
-      setSendinfo({
+      var data = {
         systemid: entityinfo.systemid,
         toaccountnumber: entityinfo.entityaccountnumber,
         symbol: symbol.issuetype,
-        amount: amount,
-      });
+        amount: Number(symbol.satspertoken * amount),
+      };
 
-      const tokendata = await loginservice.sendfromsource(sendinfo);
+      const tokendata = await loginservice.sendfromsource(data);
       setError("Success " + tokendata.txid);
     } catch (err) {
       setError("Update failed " + err);
@@ -99,14 +101,14 @@ export default function Transmitassets({ setToken }) {
 
   const sendtocentral = async () => {
     try {
-      setSendinfo({
+      var data = {
         systemid: entityinfo.systemid,
         toaccountnumber: entityinfo.centralaccountnumber,
         symbol: symbol.issuetype,
-        amount: amount,
-      });
+        amount: Number(symbol.satspertoken * amount),
+      };
 
-      const tokendata = await loginservice.sendfromsource(sendinfo);
+      const tokendata = await loginservice.sendfromsource(data);
       setError("Success " + tokendata.txid);
     } catch (err) {
       setError("Update failed " + err);
@@ -143,53 +145,25 @@ export default function Transmitassets({ setToken }) {
           />
         </div>
         <div className="field text-2xl">
-          <label htmlFor="entiityid">Entity id: {entityinfo.entityid}</label>
+          <label htmlFor="maximum">Max: {symbol.amount}</label>
+        </div>
 
-          <InputText
-            id="entiityid"
-            type="text"
-            placeholder="entityid"
-            onChange={(e) =>
-              setEntityinfo({ ...entityinfo, entityid: e.target.value })
-            }
-            style={{ height: "4rem", fontSize: "2.0rem" }}
-          />
+        <div className="field text-2xl">
+          <label htmlFor="satspertoken">SPT: {symbol.satspertoken}</label>
+        </div>
+
+        <div className="field text-2xl">
+          <label htmlFor="entiityid">Entity id: {entityinfo.entityid}</label>
         </div>
         <div className="field text-2xl">
           <label htmlFor="entityaccno">
-            Entity account number: {entityinfo.entityaccountnumber}
+            Entity account : {entityinfo.entityaccountnumber}
           </label>
-
-          <InputText
-            type="text"
-            id="entityaccno"
-            placeholder="entityaccountnumber"
-            onChange={(e) =>
-              setEntityinfo({
-                ...entityinfo,
-                entityaccountnumber: e.target.value,
-              })
-            }
-            style={{ height: "4rem", fontSize: "2.0rem" }}
-          />
         </div>
         <div className="field text-2xl">
           <label htmlFor="centralaccno">
-            Central account number: {entityinfo.centralaccountnumber}
+            Central account : {entityinfo.centralaccountnumber}
           </label>
-
-          <InputText
-            type="text"
-            id="centralaccno"
-            placeholder="centralaccountnumber"
-            onChange={(e) =>
-              setEntityinfo({
-                ...entityinfo,
-                centralaccountnumber: e.target.value,
-              })
-            }
-            style={{ height: "4rem", fontSize: "2.0rem" }}
-          />
         </div>
       </div>
       <div className="field text-2xl">

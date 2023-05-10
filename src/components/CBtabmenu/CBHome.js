@@ -19,6 +19,7 @@ const CBHome = ({ data, setData }) => {
   const [holdingsymbol, setHoldingsymbol] = useState("");
   const [accountowners, setAccountowners] = useState([]);
   const [assets, setAssets] = useState([]);
+  const [allassets, setAllassets] = useState([]);
   const [balances, setBalances] = useState([]);
   const [transactionhappened, setTransactionhappened] = useState(false);
 
@@ -34,6 +35,10 @@ const CBHome = ({ data, setData }) => {
         setHoldingsymbol(data[0].issuetype);
       }
       setAssets(data);
+    });
+
+    issuanceservice.getallentityassets().then((data) => {
+      setAllassets(data);
     });
 
     issuanceservice.getaccountowners().then((data) => {
@@ -88,7 +93,7 @@ const CBHome = ({ data, setData }) => {
     if (activetwo === 0) {
       return (
         <CBDCAssets
-          assets={assets}
+          allassets={allassets}
           data={data}
           setData={setData}
           user={user}

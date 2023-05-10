@@ -15,11 +15,20 @@ const WBOFxTrade = ({ data, setData }) => {
   const [activetwo, setActivetwo] = useState(0);
   const [activethree, setActivethree] = useState(0);
   const [assets, setAssets] = useState([]);
+  const [transacted, setTransacted] = useState({
+    operation: false,
+    trader: false,
+  });
 
   // Center operate
   const DisplayOne = () => {
     if (activeone === 0) {
-      return <WBOFxTransferCBDC data={data} setData={setData} />;
+      return (
+        <WBOFxTransferCBDC
+          transacted={transacted}
+          setTransacted={setTransacted}
+        />
+      );
     } else if (activeone === 1) {
       return <WBFxRequestDVP data={data} setData={setData} />;
     }
@@ -29,10 +38,20 @@ const WBOFxTrade = ({ data, setData }) => {
   const DisplayTwo = () => {
     if (activetwo === 0) {
       return (
-        <WBFxOperationAssets assets={assets} data={data} setData={setData} />
+        <WBFxOperationAssets
+          assets={assets}
+          transacted={transacted}
+          setTransacted={setTransacted}
+        />
       );
     } else if (activetwo === 1) {
-      return <WBFxTraderAssets assets={assets} data={data} setData={setData} />;
+      return (
+        <WBFxTraderAssets
+          assets={assets}
+          transacted={transacted}
+          setTransacted={setTransacted}
+        />
+      );
     }
   };
 

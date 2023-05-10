@@ -92,7 +92,7 @@ export default function Autoconfigure({ setToken }) {
   return (
     <div className="col-12 ">
       <div className="card p-fluid">
-        <h5 className="text-3xl text-center">Central Bank AutoConfigure </h5>
+        <h5 className="text-3xl text-center">Central Bank Auto Configure </h5>
 
         <div className="field text-2xl">
           <label htmlFor="entityemail1">
@@ -110,9 +110,9 @@ export default function Autoconfigure({ setToken }) {
             style={{ height: "4rem", fontSize: "2.0rem" }}
           />
         </div>
+        {/*
         <div className="field text-2xl">
           <label htmlFor="urlname">URL name: {entityinfo.urlname}</label>
-
           <InputText
             type="text"
             id="urlname"
@@ -127,7 +127,6 @@ export default function Autoconfigure({ setToken }) {
           <label htmlFor="entityname">
             Entity name: {entityinfo.entityname}
           </label>
-
           <InputText
             type="text"
             id="entityname"
@@ -137,6 +136,7 @@ export default function Autoconfigure({ setToken }) {
             }
           />
         </div>
+	  */}
         <div className="field text-2xl">
           <label htmlFor="organization">
             Organization: {entityinfo.organization}
@@ -152,10 +152,9 @@ export default function Autoconfigure({ setToken }) {
             style={{ height: "4rem", fontSize: "2.0rem" }}
           />
         </div>
-
+        {/*
         <div className="field text-2xl">
           <label htmlFor="role">Role: {entityinfo.role}</label>
-
           <Dropdown
             value={role}
             options={roles}
@@ -168,6 +167,7 @@ export default function Autoconfigure({ setToken }) {
             className="text-2xl"
           />
         </div>
+*/}
       </div>
       <div className="field text-2xl">
         {/* Status:  */}

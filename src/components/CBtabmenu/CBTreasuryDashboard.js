@@ -11,11 +11,6 @@ const CBTreasuryDashboard = () => {
   const history = useHistory();
   const wizardItems = [
     {
-      label: "BONDS",
-      icon: "pi text-xl pi-fw pi-check",
-      command: () => history.push("/central-bank/treasury-dashboard"),
-    },
-    {
       label: "CBDC ASSETS",
       icon: "pi text-xl pi-fw pi-user",
       command: () =>
@@ -28,10 +23,11 @@ const CBTreasuryDashboard = () => {
         history.push("/central-bank/treasury-dashboard/money-supply"),
     },
   ];
+  //<CBDCAssets allassets={allassets} data={data} setData={setData} user={user}  transactionhappened={transactionhappened}  balances={balances}  accountowners={accountowners}
 
   return (
     <div className="card ">
-      <h5 className="text-3xl p-5">Member Controls</h5>
+      <h5 className="text-3xl p-5">Dashboard </h5>
       <TabMenu
         model={wizardItems}
         activeIndex={activeIndex}

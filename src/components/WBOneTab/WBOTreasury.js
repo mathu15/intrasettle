@@ -15,20 +15,6 @@ const WBOTreasury = () => {
       icon: "pi text-xl pi-fw pi-dollar",
       command: () => history.push("/wholesale-bank-one/treasury-dashboard"),
     },
-    {
-      label: "BALANCE OVER TIME",
-      icon: "pi text-xl pi-fw pi-calendar",
-      command: () =>
-        history.push(
-          "/wholesale-bank-one/treasury-dashboard/balance-over-time"
-        ),
-    },
-    {
-      label: "BONDS",
-      icon: "pi text-xl pi-fw pi-dollar",
-      command: () =>
-        history.push("/wholesale-bank-one/treasury-dashboard/bonds"),
-    },
   ];
 
   return (

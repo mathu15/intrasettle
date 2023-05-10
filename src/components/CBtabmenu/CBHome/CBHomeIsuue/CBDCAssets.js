@@ -24,7 +24,7 @@ function satisfy( assets, symbol, balance) {
 */
 
 const CBDCAssets = ({
-  assets,
+  allassets,
   data1,
   setData1,
   user,
@@ -71,7 +71,6 @@ const CBDCAssets = ({
   useEffect(() => {
     //fetch data from api
     const fetchData = async () => {
-      //const url = "https://thebsv.tech/centralbank/getassets";
       const dataset1 = [];
       const dataset2 = [];
 
@@ -81,7 +80,7 @@ const CBDCAssets = ({
             if (xx.tokens) {
               xx.tokens.forEach((yy) => {
                 dataset1.push(
-                  satspertoken.satisfy(assets, yy.symbol, yy.balance)
+                  satspertoken.satisfy(allassets, yy.symbol, yy.balance)
                 );
                 dataset2.push(yy.symbol);
               });
@@ -105,7 +104,7 @@ const CBDCAssets = ({
     };
 
     fetchData();
-  }, [balances, assets, user.centraladdress, transactionhappened]);
+  }, [balances, allassets, user.centraladdress, transactionhappened]);
 
   const [lightOptions] = useState({
     indexAxis: "x",
